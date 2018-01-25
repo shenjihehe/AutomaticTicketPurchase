@@ -2,7 +2,7 @@
 # @Author: pc
 # @Date:   2018-01-05 10:45:55
 # @Last Modified by:   pc
-# @Last Modified time: 2018-01-18 15:55:48
+# @Last Modified time: 2018-01-25 11:22:04
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -16,8 +16,8 @@ username = '******@qq.com'
 password = '******'
 
 # 出发地，目的地
-fromstation = '福州'
-tostation = '莆田'
+fromstation = '莆田'
+tostation = '秦皇岛'
 
 # 车次，选择第几趟，0则从上往下依次点击
 order = 1
@@ -38,7 +38,6 @@ driver.implicitly_wait(10)
 driver.maximize_window()
 driver.find_element_by_id("username").clear()
 driver.find_element_by_id("username").send_keys(username)
-time.sleep(1)
 driver.find_element_by_id("password").clear()
 driver.find_element_by_id("password").send_keys(password)
 print('等待验证码，自行输入...')
@@ -58,13 +57,19 @@ driver.find_element_by_id('fromStationText').send_keys(fromstation, Keys.ENTER)
 driver.find_element_by_id('toStationText').clear()
 driver.find_element_by_id('toStationText').click()
 driver.find_element_by_id('toStationText').send_keys(tostation, Keys.ENTER)
-# 出发日
-driver.find_element_by_id('train_date').click()
-dtimes = driver.find_elements_by_css_selector('div.cal-right div.so')		# 下月
-# dtimes = driver.find_elements_by_css_selector('div.cal div.so')		# 本月
-for dtime in dtimes:
-	if dtime.text == '6':	# 出发日
-		dtime.click()
+# 选择出发日
+# driver.find_element_by_id('train_date').click()
+# dtimes = driver.find_elements_by_css_selector('div.cal-right div.so')		# 下月
+# # dtimes = driver.find_elements_by_css_selector('div.cal div.so')		# 本月
+# for dtime in dtimes:
+# 	if dtime.text == '20':	# 出发日
+# 		dtime.click()
+
+# # 去除readonly属性，直接输入日期
+js = "var setDate=document.getElementById('train_date');setDate.removeAttribute('readonly');"
+driver.execute_script(js)
+driver.find_element_by_id("train_date").clear()
+driver.find_element_by_id("train_date").send_keys("2018-02-24")		# 出发日
 
 count = 0
 if order != 0:
@@ -133,4 +138,4 @@ print("提交订单...")
 driver.find_element_by_id("submitOrder_id").click()
 
 print("确认选座...")
-# WebDriverWait(driver, 3, 0.2).until(EC.visibility_of_element_located((By.ID, "qr_submit_id"))).click()
+WebDriverWait(driver, 3, 0.5).until(EC.visibility_of_element_located((By.ID, "qr_submit_id"))).click()
